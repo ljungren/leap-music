@@ -1,0 +1,9 @@
+.square{
+  //border: 3px solid #2B39B6;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+}
+body{
+  // background-color: green;
+}
