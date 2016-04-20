@@ -1,0 +1,14 @@
+{
+  "name": "leap-music",
+  "description": "Manipulate music with leap motion",
+  "main": "index.js",
+  "authors": [
+    "Joakim Ljungren"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/ljungren/leap-music",
+  "dependencies": {
+    "jquery": "^2.2.3",
+    "leapjs": "^0.6.4"
+  }
+}

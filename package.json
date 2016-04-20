@@ -1,0 +1,35 @@
+{
+  "name": "leap-music",
+  "version": "1.0.0",
+  "description": "Manipulate music with leap motion",
+  "main": "index.js",
+  "scripts": {
+    "start": "grunt develop",
+    "build": "grunt bump && grunt build",
+    "postinstall": "bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ljungren/leap-music.git"
+  },
+  "author": "Joakim Ljungren",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ljungren/leap-music/issues"
+  },
+  "homepage": "https://github.com/ljungren/leap-music#readme",
+  "devDependencies": {
+    "bower": "*",
+    "grunt": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-jade": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-stylus": "*",
+    "grunt-bump": "*",
+    "grunt-open": "*"
+  }
+}
