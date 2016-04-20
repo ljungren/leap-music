@@ -22,7 +22,7 @@ var Square = function() {
   img.onload = function () {
     square.setTransform([window.innerWidth/2,window.innerHeight/2], 0);
     document.getElementsByClassName("con1")[0].appendChild(img);
-  }
+  };
   square.setTransform = function(position, rotation) {
 
     img.style.left = position[0] - img.width  / 2 + 'px';
