@@ -1,40 +1,36 @@
-@import "reset";
-@import "responsive-mixins";
+@import reset
+@import responsive-mixins
 
 body
   background-color #eee
-  overflow-y:scroll;
-  font-family Arial
-  color #eee
+  overflow-y scroll
+  font-family Roboto
   
+.wrapper
+  text-align center
+  
+.container
+  text-align left
+  max-width 800px
+  margin 5%
+  display inline-block
+  line-height 20px
+
+.outputCon
+  margin 50px 0 0 0 
+    
+h3
+  font-weight bold
+  font-size 30px
+p
+  padding-top 20px  
+
 .square
+  left 100px
   position absolute
   width 100px
   height 100px
 
-@media screen and (max-width: 920px)
-  .comment-card, .team-box, .show-more, .show-less
-      width 100%
-  .chart-container, #chart
-    width 300px 
-    height 300px
-    text-align center
-    margin 0 auto
-    color #212721
-  .comments
-     margin-top 20px
-     width 100%
-     display block
-     margin-left 0
-     vertical-align baseline
-  
-  .pie-legend
-    text-align center
-    width 400px
-    margin-left -40px
+// @media screen and (max-width: 920px)
     
-@media screen and (max-width: 440px)
-  .pie-legend
-    text-align center
-    width 350px
-    margin-left -20px
+// @media screen and (max-width: 440px)

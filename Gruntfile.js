@@ -1,6 +1,4 @@
-
 module.exports = function(grunt){
-
 
 var config = {
     connectOptions: {
@@ -12,7 +10,7 @@ var config = {
     livereload: 9001,
     jsLibFiles: [
       'bower_components/leapjs/leap-0.6.4.js',
-      'bower_components/jquery/dist/jquery.js'
+      'bower_components/leapjs-plugins/main/leap-plugins-0.1.11.js'
     ],
     jsFiles: [
       'app.js'

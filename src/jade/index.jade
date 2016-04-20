@@ -1,30 +1,23 @@
 doctype html
 html
   head
-    title Demo
+    title Leap Music
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
-    meta(name='description', content='Demo project')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='stylesheet', href='http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css')
-    link(rel='stylesheet', type='text/css', href='styles/style.css')
+    meta(name='description', content='Leap Music')
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+    if develop
+      link(href="css/app.css", type="text/css", rel="stylesheet")
+    else
+      link(href="css/app-#{version}.min.css", type="text/css", rel="stylesheet")
   body
-    .container
-      h3 Leap Demo
+    .wrapper
+      .container
+        h3 Leap Music
 
-      p
-        | Hello! This is a very basic web application showcasing data handling from a Leap Motion device with the LeapJS framework.
-        br
-        br
-        | Plug in your device and make sure the software is running!
-        br
-        br
-        | Move your hands around over the Leap to see some passed example data. Try pinching some imaginative objects.
-      .container.con2
-        #output 
-    //- script(src='http://js.leapmotion.com/leap-0.6.3.js')
-    //- script(src='http://js.leapmotion.com/leap-plugins-0.1.8.js')
-    //- script(src='../js/data.js')
+        p Hello! This is a web application showcasing data handling from a Leap Motion device with the LeapJS framework. Plug in your device and make sure the software is running! <br> Move your hands around over the Leap.
+        .outputCon
+          #output
     if develop
       each jsFile in jsLibFiles
         script(src="js/#{jsFile}")
