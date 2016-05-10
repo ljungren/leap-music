@@ -8,9 +8,7 @@
   "license": "ISC",
   "homepage": "https://github.com/ljungren/leap-music",
   "dependencies": {
-    "jquery": "^2.2.3",
     "leapjs": "^0.6.4",
-    "leapjs-plugins": "^0.1.11",
-    "howler.js": "howler#^1.1.29"
+    "leapjs-plugins": "^0.1.11"
   }
 }

@@ -14,7 +14,10 @@ var config = {
       'bower_components/howler.js/howler.js'
     ],
     jsFiles: [
-      'app.js'
+      'square.js',
+      'simulation.js',
+      'sound.js',
+      'main.js'
     ]
   };
 
