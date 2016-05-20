@@ -10,8 +10,9 @@ function Simulation() {
     var frameString = "", handString = "", fingerString = "";
     var hand, finger;
     var squares = {};
-    var volumeSlider = document.getElementById("volume-slider");    
-    // var filterSlider = document.getElementById("filter");
+    var volumeSlider = document.getElementById("volume-slider");
+    var filterSlider = document.getElementById("filter-slider");  
+    var filterQSlider = document.getElementById("filter-q-slider");
     // var crossfadeSlider = document.getElementById("crosssfade");
 
     Leap.loop(function(frame) {
@@ -35,12 +36,17 @@ function Simulation() {
 
         //filter
         //if right open palm
-        // if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'right'){
-        //   sound.filter(element, hand.screenPosition()[1]);
-        // }
+        if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'right'){
+          sound.changeFrequency(filterSlider, hand.screenPosition()[1]);
+        }
+
+        //if right closed palm
+        if(hand.grabStrength > 0.8 && hand.type == 'right'){
+          sound.changeFrequency(filterQSlider, hand.screenPosition()[1]);
+        }
 
         //crossfade
-        //if any closed fist
+        //if left closed fist
         // if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1){
         //   sound.filter(element, hand.screenPosition()[0]);
         // }
