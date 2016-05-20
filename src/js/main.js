@@ -1,10 +1,9 @@
-
-window.onload = initSound;
-
 var context;
 var sound;
 var simulation;
 var loaded = false;
+
+window.onload = initSound;
 
 // create the simulation environment
 function initSimulation(){
@@ -13,6 +12,7 @@ function initSimulation(){
 }
 // create audiocontext and load sources
 function initSound() {
+  loaded = false;
   // Fix up prefixing
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   context = new AudioContext();

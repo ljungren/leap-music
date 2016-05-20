@@ -16,8 +16,18 @@ html
         h3 Leap Music
 
         p Hello! This is a web application for manipulating music with a leap motion. Plug in your device and make sure the software is running! <br> Move your hands around over the Leap.
-        button#btn(onclick='sound.toggle()') start/stop music
-        input(type='range', min='0', max='100', value='100', oninput='sound.changeVolume(this);')
+        .btns
+          button#btn(onclick='sound.toggle()') start/stop
+
+        .checkboxes
+          input#enable-volume(type='checkbox', name='volume' value='enabled' checked)
+          input#enable-filter(type='checkbox', name='volume' value='enabled' checked)
+        .sliders
+          input#volume-slider(type='range', min='0', max='200', value='300', orient='vertical', oninput='sound.changeVolume(this, 0)')
+          input#filter-slider(type='range', min='0', max='200', value='200', orient='vertical', oninput='sound.changeFrequency(this, 0)')
+          input#filter-q-slider(type='range', min='0', max='200', value='100', orient='vertical', oninput='sound.changeQuality(this, 0)')
+        .crossfade
+          //- input#crossfade-slider(type='range', min='0', max='200', value='100', oninput='sound.crossFade(this, 0)')
 
         .outputCon
           #output
@@ -27,6 +37,7 @@ html
 
     each jsFile in jsFiles
       script(src="js/#{jsFile}")
+    //- script(src='//js.leapmotion.com/leap-plugins-0.1.11.min.js')
 
     if develop
       script(src="//localhost:9001/livereload.js")

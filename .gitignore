@@ -2,10 +2,9 @@ bower_components
 node_modules
 www-root
 dist
-npm-degub.log
-simulation-gammal.js
-volume.js
-buffer-loader.js
-filter.js
+npm-debug.log
+simp.js
+hands.js
+
 
 

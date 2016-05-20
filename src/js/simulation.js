@@ -1,8 +1,7 @@
 function Simulation() {
 
-  this.nrOfHands = 0;
-  this.frameString = "";
   this.sound = {};
+  var wait = false; //for detectgesture() to avoid calling toggle in rapid sucess
 
   this.start = function(sound){
 
@@ -11,61 +10,95 @@ function Simulation() {
     var frameString = "", handString = "", fingerString = "";
     var hand, finger;
     var squares = {};
+    var volumeSlider = document.getElementById("volume-slider");    
+    // var filterSlider = document.getElementById("filter");
+    // var crossfadeSlider = document.getElementById("crosssfade");
 
     Leap.loop(function(frame) {
 
+      frameString = concatData("frame_id", frame.id);
+      frameString = concatData("Number of hands", frame.hands.length);
+      frameString += concatData("num_fingers", frame.fingers.length);
+      frameString += "<br>";
+
       frame.hands.forEach(function(hand, index) {
+        //squares
         var square = ( squares[index] || (squares[index] = new Square()) );    
         square.setTransform(hand.screenPosition(), hand.roll());
-      });
 
-      //collectData
-      this.frameString = concatData("frame_id", frame.id);
-      this.frameString = concatData("Number of hands", frame.hands.length);
-      this.frameString += concatData("num_fingers", frame.fingers.length);
-      this.frameString += "<br>";
-      
-      for (var i=0, len = frame.hands.length; i<len; i++){
-        hand = frame.hands[i];
-        handString = concatData("What hand? ", hand.type);
-        handString += concatData("Pinch strength", getForce(hand.pinchStrength));
-        handString += concatData("Grab strength", getForce(hand.grabStrength));
+        //volume
+        //if left open palm
+        if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'left'){
+          //element and height of hand as parameters
+          sound.changeVolume(volumeSlider, hand.screenPosition()[1]);
+        }
+
+        //filter
+        //if right open palm
+        // if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'right'){
+        //   sound.filter(element, hand.screenPosition()[1]);
+        // }
+
+        //crossfade
+        //if any closed fist
+        // if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1){
+        //   sound.filter(element, hand.screenPosition()[0]);
+        // }
+        
+
+        // hand = frame.hands[index];
+        height = hand.screenPosition()[1];
+        handString = concatData("Hand ", hand.type);
+        handString += concatData("Interaction box height:" + frame.interactionBox.height);
+        handString += concatData("Screen height", (1000-height-400)*0.4);
+        handString += concatData("Pinch strength", hand.pinchStrength);
+        handString += concatData("Grab strength", hand.grabStrength);
         handString += "<br>";
-        this.frameString += handString;
-        this.frameString += fingerString;
+        frameString += handString;
+        frameString += fingerString;
+
+      });
+      
+      // for (var i=0, len = frame.hands.length; i<len; i++){
+
+      // }
+      output.innerHTML = frameString;
+      
+      if(!wait){
+        detectGesture(frame);
+        wait = true;
+        setTimeout(function(){
+          wait = false;
+        }, 100);
       }
-      output.innerHTML = this.frameString;
       
-      detectGesture(frame);
-      
-    }).use('screenPosition', {scale: 0.25});
+    }).use('screenPosition', {scale: 0.3});
 
     // always receive frames
     Leap.loopController.setBackground(true);
     //leap loop uses browsers request AnimationFrame
     var options = {enableGestures: true};
     squares[0] = new Square();
+
   };
 
   function detectGesture(frame){
-    if(frame.valid && frame.gestures.length > 0){
+    if(!wait){
       frame.gestures.forEach(function(gesture){
-        if(frame.hands[0].type == "left"){
-          switch (gesture.type){
-            case "circle":
-                //console.log("Circle Gesture");
-                break;
-            case "keyTap":
-                //console.log("Key Tap Gesture");
-                break;
-            case "screenTap":
-                console.log("Screen Tap Gesture");
-                this.sound.toggle();
-                break;
-            case "swipe":
-                //console.log("Swipe Gesture");
-                break;
-          }
+        switch (gesture.type){
+          case "circle":
+              //console.log("Circle Gesture");
+              break;
+          case "keyTap":
+              //console.log("Key Tap Gesture");
+              break;
+          case "screenTap":
+              console.log("Screen Tap Gesture");
+              this.sound.toggle();
+              break;
+          case "swipe":
+              //console.log("Swipe Gesture");
+              break;
         }
       });
     }
@@ -73,44 +106,6 @@ function Simulation() {
 
   function concatData(id, data){
     return id + ": " + data + "<br>";
-  }
-
-  function getForce(value){
-    if(value<=0.2){
-      return 'none';
-    }
-    else if(value<=0.4){
-      return 'weak';
-    }
-    else if(value<=0.6){
-      return 'mellow';
-    }
-    else{
-      return 'strong';
-    }
-  }
-
-  function getFingerName(fingerType){
-    var rv = 'None';
-    switch(fingerType){
-      case 0:
-        rv = 'Thumb';
-        break;
-      case 1:
-        rv = 'Index';
-        break;
-      case 2:
-        rv = 'Middle';
-        break;
-      case 3:
-        rv = 'Ring';
-        break;
-      case 4:
-        rv = 'Pinky';
-        break;
-      default:
-        return rv;
-    }
   }
 
   function concatJointPosition(id, position){
