@@ -40,8 +40,8 @@ function Simulation() {
           sound.changeFrequency(filterSlider, hand.screenPosition()[1]);
         }
 
-        //if right closed palm
-        if(hand.grabStrength > 0.8 && hand.type == 'right'){
+        //if right closed palm with thumb out
+        if(hand.grabStrength > 0.8 && hand.pinchStrength < 0.1 && hand.type == 'right'){
           sound.changeFrequency(filterQSlider, hand.screenPosition()[1]);
         }
 
@@ -55,7 +55,7 @@ function Simulation() {
         // hand = frame.hands[index];
         height = hand.screenPosition()[1];
         handString = concatData("Hand ", hand.type);
-        handString += concatData("Interaction box height:" + frame.interactionBox.height);
+        handString += concatData("Interaction box:" + frame.interactionBox.size);
         handString += concatData("Screen height", (1000-height-400)*0.4);
         handString += concatData("Pinch strength", hand.pinchStrength);
         handString += concatData("Grab strength", hand.grabStrength);

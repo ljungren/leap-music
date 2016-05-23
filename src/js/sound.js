@@ -59,7 +59,7 @@ function Sound(main, context, urlList, callback) {
     this.gainNode = context.createGain();
     this.filter = context.createBiquadFilter();
     //filter.type is defined as string type in the latest API. But this is defined as number type in old API.
-    this.filter.type = (typeof this.filter.type === 'string') ? 'lowpass' : 0; // LOWPASS
+    this.filter.type = 'lowpass'; // LOWPASS
     this.filter.frequency.value = 5000;
 
     //connect sources to filter and gain node
@@ -78,7 +78,8 @@ function Sound(main, context, urlList, callback) {
       this.changeVolume(document.getElementById("volume-slider"), 0);
       this.changeFrequency(document.getElementById("filter-slider"), 0);
       this.changeQuality(document.getElementById("filter-q-slider"), 0);
-      this.source1.start(0);
+      // this.source1.start(0);
+      this.source2.start(0);
     }catch(e){
       if(e instanceof TypeError){
         // not loaded source yet, tell user to try again
@@ -87,14 +88,13 @@ function Sound(main, context, urlList, callback) {
         throw e;
       }
     }
-    //this.source2.start(0);
     this.playing = true;
   };
 
   this.stop = function() {
     try{
-      this.source1.stop(0);
-      //this.source2.stop(0);
+      // this.source1.stop(0);
+      this.source2.stop(0);
     }catch(e){
       if(e instanceof TypeError){
         // not loaded source yet, tell user to try again
@@ -198,7 +198,6 @@ function Sound(main, context, urlList, callback) {
       element.value = (1000-height-400)*0.4;
     }
     try{
-      console.log("filter quality: " + quality * this.QUAL_MUL);
       this.filter.Q.value = quality * this.QUAL_MUL;
     }
     catch(e){
@@ -212,18 +211,23 @@ function Sound(main, context, urlList, callback) {
   };
 
   this.toggleFilter = function(element) {
-    this.source.disconnect(0);
-    this.filter.disconnect(0);
+    
     // Check if we want to enable the filter.
     if (element.checked) {
-      // Connect through the filter.
-      this.source.connect(this.filter);
-      this.filter.connect(context.destination);
+      this.filter.connect(this.context.destination);
     } else {
-      // Otherwise, connect directly.
-      this.source.connect(context.destination);
+      this.filter.disconnect(0);
     }
   };
+
+  this.toggleVolume = function(element) {
+    if (element.checked) {
+      this.gainNode.connect(this.context.destination);
+    } else {
+      this.gainNode.disconnect(0);
+    }
+  };
+
 
   this.connectSource = function(source, instance){
     try{
