@@ -9,9 +9,11 @@ window.onload = initSound;
 function initSimulation(){
   simulation = new Simulation();
   simulation.start(sound);
+  stopLoadingView();
 }
 // create audiocontext and load sources
 function initSound() {
+  startLoadingView();
   loaded = false;
   // Fix up prefixing
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -41,5 +43,13 @@ function finishedLoading(bufferList) {
 
   //finished loading, start simulation
   loaded = true;
+  //change view from loading screen
   initSimulation();
+}
+
+function startLoadingView(){
+
+}
+function stopLoadingView(){
+
 }

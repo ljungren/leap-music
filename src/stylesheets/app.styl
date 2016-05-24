@@ -1,5 +1,6 @@
 @import reset
 @import responsive-mixins
+// @import range
 
 body
   background-color #eee
@@ -34,14 +35,17 @@ p
 label
   position fixed
   white-space nowrap
-  
+
+.crossfade input
+  width 200px
+  height 8px
+
 .sliders input
   writing-mode bt-lr /* IE */
   -webkit-appearance slider-vertical/* WebKit */
   width 8px
   height 200px
   margin 2% 50px 2% 0
-  padding 0 5px
   
 .btns
   margin 2% 20px 2% 0

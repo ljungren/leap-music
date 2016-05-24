@@ -7,13 +7,13 @@ function Simulation() {
 
     this.sound = sound;
     var output = document.getElementById('output');
-    var frameString = "", handString = "", fingerString = "";
+    var frameString = "", handString = "";
     var hand, finger;
     var squares = {};
     var volumeSlider = document.getElementById("volume-slider");
     var filterSlider = document.getElementById("filter-slider");  
     var filterQSlider = document.getElementById("filter-q-slider");
-    // var crossfadeSlider = document.getElementById("crosssfade");
+    var crossfadeSlider = document.getElementById("crossfade-slider");
 
     Leap.loop(function(frame) {
 
@@ -27,6 +27,8 @@ function Simulation() {
         var square = ( squares[index] || (squares[index] = new Square()) );    
         square.setTransform(hand.screenPosition(), hand.roll());
 
+        //closed fist makes no input
+
         //volume
         //if left open palm
         if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'left'){
@@ -35,8 +37,8 @@ function Simulation() {
         }
 
         //filter
-        //if right open palm
-        if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'right'){
+        //if left closed palm with thumb out
+        if(hand.pinchStrength < 0.1 && hand.grabStrength > 0.8 && hand.type == 'left'){
           sound.changeFrequency(filterSlider, hand.screenPosition()[1]);
         }
 
@@ -46,22 +48,20 @@ function Simulation() {
         }
 
         //crossfade
-        //if left closed fist
-        // if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1){
-        //   sound.filter(element, hand.screenPosition()[0]);
-        // }
+        //if right open palm
+        if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'right'){
+          sound.crossFade(crossfadeSlider, hand.screenPosition()[0]);
+        }
         
 
         // hand = frame.hands[index];
         height = hand.screenPosition()[1];
         handString = concatData("Hand ", hand.type);
-        handString += concatData("Interaction box:" + frame.interactionBox.size);
         handString += concatData("Screen height", (1000-height-400)*0.4);
         handString += concatData("Pinch strength", hand.pinchStrength);
         handString += concatData("Grab strength", hand.grabStrength);
         handString += "<br>";
         frameString += handString;
-        frameString += fingerString;
 
       });
       

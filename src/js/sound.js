@@ -6,7 +6,9 @@ function Sound(main, context, urlList, callback) {
   this.onload = callback;
   this.bufferList = [];
   this.loadCount = 0;
-  this.gainNode = null;
+  this.masterVolume = 0;
+  this.leftGain = null;
+  this.rightGain = null;
   this.filter = null;
   this.source1 = null;
   this.source2 = null;
@@ -56,33 +58,34 @@ function Sound(main, context, urlList, callback) {
 
     if (!context.createGain)
       context.createGain = context.createGainNode;
-    this.gainNode = context.createGain();
+    this.leftGain = context.createGain();
+    this.rightGain = context.createGain();
     this.filter = context.createBiquadFilter();
     //filter.type is defined as string type in the latest API. But this is defined as number type in old API.
-    this.filter.type = 'lowpass'; // LOWPASS
-    this.filter.frequency.value = 5000;
+    this.filter.type = (typeof this.filter.type === 'string') ? 'lowpass' : 0; // LOWPASS
 
-    //connect sources to filter and gain node
-    this.connectSource(this.source1, this.gainNode);
-    this.connectSource(this.source2, this.gainNode);
+    //connect sources to filter and gain nodes
+    this.connectSource(this.source1, this.leftGain);
+    this.connectSource(this.source2, this.rightGain);
     this.connectSource(this.source1, this.filter);
     this.connectSource(this.source2, this.filter);
 
     // Connect gain node and filter to destination
-    this.gainNode.connect(context.destination);
+    // this.gainNode.connect(context.destination);
+    this.leftGain.connect(context.destination);
+    this.rightGain.connect(context.destination);
     this.filter.connect(context.destination);
     // loop playback
     try{
-      this.source1.loop = true;
-      this.source2.loop = true;
       this.changeVolume(document.getElementById("volume-slider"), 0);
       this.changeFrequency(document.getElementById("filter-slider"), 0);
       this.changeQuality(document.getElementById("filter-q-slider"), 0);
-      // this.source1.start(0);
+      this.source1.start(0);
       this.source2.start(0);
     }catch(e){
       if(e instanceof TypeError){
         // not loaded source yet, tell user to try again
+
       }
       else{
         throw e;
@@ -93,18 +96,15 @@ function Sound(main, context, urlList, callback) {
 
   this.stop = function() {
     try{
-      // this.source1.stop(0);
+      this.source1.stop(0);
       this.source2.stop(0);
     }catch(e){
       if(e instanceof TypeError){
         // not loaded source yet, tell user to try again
       }
-      else if(e instanceof InvalidStateError){
-        //if trying to stop when already stop
-        this. play();
-      }
       else{
-        throw e;
+        //if trying to stop when already stop
+        this.play();
       }
     }
     this.playing = false;
@@ -120,6 +120,16 @@ function Sound(main, context, urlList, callback) {
     }
   };
 
+  //Remove?
+  this.toggleVolume = function(element) {
+    if (element.checked) {
+      this.gainNode.connect(this.context.destination);
+    } else {
+      this.gainNode.gain.value = this.leftGain.gain.value;
+      this.gainNode.disconnect(0);
+    }
+  };
+
   this.changeVolume = function(element, height) {
     var volume;
     //if volume is changed by slider
@@ -128,26 +138,81 @@ function Sound(main, context, urlList, callback) {
     }
     else{
       //volume is changed by hand
-      //correct scale
-      // volume = (1000-height-400)*0.4;
+      //change scale to be between 0 and 200
       volume = (600-height)*0.4;
       element.value = volume;
     }
-    //Applying an x-squared curve
-    var fraction = (parseInt(volume) / parseInt(100));
-    
-    try{
-      this.gainNode.gain.value = fraction * fraction * 2;  
+    //change scale to be between -2 and 8
+    volume = (((volume / 100) * 5) - 2);
+    //make sure limits is not trespassed
+    this.masterVolume = (volume > 8) ? 8 : volume;
+    this.masterVolume = (volume < -2) ? -2 : volume;
+    this.crossFade(document.getElementById("crossfade-slider"), 0);
+  };
+
+  this.crossFade = function(element, width) {
+    if(width===0){
+      index = element.value;
     }
-    catch(e){
-      if(e instanceof TypeError){
-        //no gain node to assign value yet, notify user sound is loading
+    else{
+      index = ((width-300))*(2/5);
+      element.value = index;
+    }
+    // console.log(index);
+    index = index / 200;
+
+    //index varies between 0 and 1
+    // Use an equal-power crossfading curve:
+    var gain1 = Math.cos(index * 0.5*Math.PI);
+    var gain2 = Math.cos((1.0 - index) * 0.5*Math.PI);
+    gain1 = ((gain1 * 10) - 2);
+    gain2 = ((gain2 * 10) - 2);
+
+    //gain1 and gain2 varies between -2 and 8
+    //take mastervolume value and apply to distribition
+    this.applyMaster(gain1, gain2);
+    console.log('master: '+this.masterVolume);
+  };
+
+  this.applyMaster = function(gain1, gain2){
+    try{
+      if(gain1 >= 0){
+        //8 is max limit
+        gain1 = (gain1 > 8) ? 8 : gain1;
+        this.leftGain.gain.value = ((gain1/8)*this.masterVolume);
+        console.log('left: '+this.leftGain.gain.value);
       }
       else{
-        throw e;
+        //-2 is min limit
+        gain1 = (gain1 < -2) ? -2 : gain1;
+        this.leftGain.gain.value = gain1;
+        console.log('left: '+this.leftGain.gain.value);
+      }
+      if(gain2 >= 0){
+        gain2 = (gain2 > 8) ? 8 : gain2;
+        this.rightGain.gain.value = ((gain2/8)*this.masterVolume);
+        console.log('right: '+this.rightGain.gain.value);
+      }
+      else{
+        gain2 = (gain2 < -2) ? -2 : gain2;
+        this.rightGain.gain.value = gain2;
+        console.log('right: '+this.rightGain.gain.value);
+      }
+    }catch(e){
+      if(e instanceof TypeError){
+        //no loaded source yet
       }
     }
-    
+  };  
+
+  this.toggleCrossFade = function(element) {
+    if (element.checked) {
+      this.leftGain.connect(this.context.destination);
+      this.rightGain.connect(this.context.destination);
+    } else {
+      this.leftGain.disconnect(0);
+      this.rightGain.disconnect(0);
+    }
   };
 
   this.changeFrequency = function(element, height) {
@@ -175,7 +240,7 @@ function Sound(main, context, urlList, callback) {
     // Get back to the frequency value between min and max.
     try{
       this.filter.frequency.value = maxValue * multiplier;
-      console.log("filter frequency: " + maxValue * multiplier);
+      // console.log("filter frequency: " + maxValue * multiplier);
     }
     catch(e){
       if(e instanceof TypeError){
@@ -211,7 +276,6 @@ function Sound(main, context, urlList, callback) {
   };
 
   this.toggleFilter = function(element) {
-    
     // Check if we want to enable the filter.
     if (element.checked) {
       this.filter.connect(this.context.destination);
@@ -219,15 +283,6 @@ function Sound(main, context, urlList, callback) {
       this.filter.disconnect(0);
     }
   };
-
-  this.toggleVolume = function(element) {
-    if (element.checked) {
-      this.gainNode.connect(this.context.destination);
-    } else {
-      this.gainNode.disconnect(0);
-    }
-  };
-
 
   this.connectSource = function(source, instance){
     try{
