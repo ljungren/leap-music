@@ -11,7 +11,8 @@ var config = {
     jsLibFiles: [
       'bower_components/leapjs/leap-0.6.4.js',
       'bower_components/leapjs-plugins/main/leap-plugins-0.1.11.js',
-      'bower_components/howler.js/howler.js'
+      'bower_components/three.js/build/three.js',
+      'bower_components/rigged-hand/rigged-hand-0.1.3.js'
     ],
     jsFiles: [
       'square.js',
@@ -80,7 +81,9 @@ var config = {
           "include css": true
         },
         files: {
-          '<%= connectOptions.base %>/css/app.css': 'src/stylesheets/app.styl'
+          '<%= connectOptions.base %>/css/app.css': 'src/stylesheets/app.styl',
+          '<%= connectOptions.base %>/css/range.css': 'src/stylesheets/range.styl'
+
         }
       },
       deploy: {

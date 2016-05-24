@@ -9,6 +9,7 @@ function Simulation() {
     var output = document.getElementById('output');
     var frameString = "", handString = "";
     var hand, finger;
+    var riggedHandPlugin;
     var squares = {};
     var volumeSlider = document.getElementById("volume-slider");
     var filterSlider = document.getElementById("filter-slider");  
@@ -17,15 +18,10 @@ function Simulation() {
 
     Leap.loop(function(frame) {
 
-      frameString = concatData("frame_id", frame.id);
-      frameString = concatData("Number of hands", frame.hands.length);
-      frameString += concatData("num_fingers", frame.fingers.length);
-      frameString += "<br>";
-
       frame.hands.forEach(function(hand, index) {
         //squares
-        var square = ( squares[index] || (squares[index] = new Square()) );    
-        square.setTransform(hand.screenPosition(), hand.roll());
+        // var square = ( squares[index] || (squares[index] = new Square()) );    
+        // square.setTransform(hand.screenPosition(), hand.roll());
 
         //closed fist makes no input
 
@@ -52,62 +48,54 @@ function Simulation() {
         if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'right'){
           sound.crossFade(crossfadeSlider, hand.screenPosition()[0]);
         }
-        
 
-        // hand = frame.hands[index];
-        height = hand.screenPosition()[1];
-        handString = concatData("Hand ", hand.type);
-        handString += concatData("Screen height", (1000-height-400)*0.4);
-        handString += concatData("Pinch strength", hand.pinchStrength);
-        handString += concatData("Grab strength", hand.grabStrength);
-        handString += "<br>";
-        frameString += handString;
+        var handMesh = hand.data('riggedHand.mesh');
+
+        var screenPosition = handMesh.screenPosition(
+          hand.palmPosition,
+          riggedHandPlugin.camera
+        );
 
       });
       
-      // for (var i=0, len = frame.hands.length; i<len; i++){
+      detectGesture(frame);
+      
+    })
+    .use('screenPosition', {scale: 0.3})
+    .use('riggedHand')
+    .use('handEntry')
+    .use('playback', {
+      recording: '../assets/recordings/leap-recording3.json.lz',
+      loop: false
+    });
 
-      // }
-      output.innerHTML = frameString;
-      
-      if(!wait){
-        detectGesture(frame);
-        wait = true;
-        setTimeout(function(){
-          wait = false;
-        }, 100);
-      }
-      
-    }).use('screenPosition', {scale: 0.3});
+    riggedHandPlugin = Leap.loopController.plugins.riggedHand;
 
     // always receive frames
     Leap.loopController.setBackground(true);
     //leap loop uses browsers request AnimationFrame
     var options = {enableGestures: true};
-    squares[0] = new Square();
 
   };
 
   function detectGesture(frame){
-    if(!wait){
-      frame.gestures.forEach(function(gesture){
-        switch (gesture.type){
-          case "circle":
-              //console.log("Circle Gesture");
-              break;
-          case "keyTap":
-              //console.log("Key Tap Gesture");
-              break;
-          case "screenTap":
-              console.log("Screen Tap Gesture");
-              this.sound.toggle();
-              break;
-          case "swipe":
-              //console.log("Swipe Gesture");
-              break;
-        }
-      });
-    }
+    frame.gestures.forEach(function(gesture){
+      switch (gesture.type){
+        case "circle":
+            //console.log("Circle Gesture");
+            break;
+        case "keyTap":
+            //console.log("Key Tap Gesture");
+            break;
+        case "screenTap":
+            console.log("Screen Tap Gesture");
+            this.sound.toggle();
+            break;
+        case "swipe":
+            //console.log("Swipe Gesture");
+            break;
+      }
+    });
   }
 
   function concatData(id, data){
@@ -119,3 +107,4 @@ function Simulation() {
   }
 
 }
+
