@@ -14,6 +14,8 @@ function Sound(main, context, urlList, callback) {
   this.source2 = null;
   this.volume = 1;
   this.playing = false;
+  this.volumeCheckBox = document.getElementById("enable-volume");
+  this.crossfadeCheckBox = document.getElementById("enable-crossfade");
 
   this.loadBuffer = function(url, index) {
     // Load buffer asynchronously
@@ -52,6 +54,21 @@ function Sound(main, context, urlList, callback) {
   this.load = function() {
     for (var i = 0; i < this.urlList.length; ++i)
       this.loadBuffer(this.urlList[i], i);
+  };
+
+  this.connectSource = function(source, instance){
+    try{
+      source.connect(instance);
+    }
+    catch(e){
+      if(e instanceof TypeError){
+        // no sound loaded yet
+        // setTimeout(function(){ console.log('try again now'); }, 1000);
+      }
+      else{
+        throw e;
+      }
+    }
   };
 
   this.play = function() {
@@ -120,83 +137,81 @@ function Sound(main, context, urlList, callback) {
     }
   };
 
-  //Remove?
-  this.toggleVolume = function(element) {
-    if (element.checked) {
-      this.gainNode.connect(this.context.destination);
-    } else {
-      this.gainNode.gain.value = this.leftGain.gain.value;
-      this.gainNode.disconnect(0);
-    }
-  };
-
   this.changeVolume = function(element, height) {
-    var volume;
-    //if volume is changed by slider
-    if(height===0){
-      volume = element.value;
+    if(this.volumeCheckBox.checked){
+      var volume;
+      //if volume is changed by slider
+      if(height===0){
+        volume = element.value;
+      }
+      else{
+        //volume is changed by hand
+        //change scale to be between 0 and 200
+        volume = (600-height)*0.4;
+        element.value = volume;
+      }
+      //change scale to be between -2 and 8
+      volume = (((volume / 100) * 5) - 2);
+      //make sure limits is not trespassed
+      this.masterVolume = (volume > 8) ? 8 : volume;
+      this.masterVolume = (volume < -2) ? -2 : volume;
+      this.crossFade(document.getElementById("crossfade-slider"), 0);
     }
-    else{
-      //volume is changed by hand
-      //change scale to be between 0 and 200
-      volume = (600-height)*0.4;
-      element.value = volume;
-    }
-    //change scale to be between -2 and 8
-    volume = (((volume / 100) * 5) - 2);
-    //make sure limits is not trespassed
-    this.masterVolume = (volume > 8) ? 8 : volume;
-    this.masterVolume = (volume < -2) ? -2 : volume;
-    this.crossFade(document.getElementById("crossfade-slider"), 0);
   };
 
   this.crossFade = function(element, width) {
-    if(width===0){
-      index = element.value;
-    }
-    else{
-      index = ((width-300))*(2/5);
-      element.value = index;
-    }
-    // console.log(index);
-    index = index / 200;
+    if(this.crossfadeCheckBox.checked){
+      if(width===0){
+        index = element.value;
+      }
+      else{
+        index = ((width-300))*(2/5);
+        element.value = index;
+      }
+      // console.log(index);
+      index = index / 200;
 
-    //index varies between 0 and 1
-    // Use an equal-power crossfading curve:
-    var gain1 = Math.cos(index * 0.5*Math.PI);
-    var gain2 = Math.cos((1.0 - index) * 0.5*Math.PI);
-    gain1 = ((gain1 * 10) - 2);
-    gain2 = ((gain2 * 10) - 2);
+      //index varies between 0 and 1
+      // Use an equal-power crossfading curve:
+      var gain1 = Math.cos(index * 0.5*Math.PI);
+      var gain2 = Math.cos((1.0 - index) * 0.5*Math.PI);
+      gain1 = ((gain1 * 10) - 2);
+      gain2 = ((gain2 * 10) - 2);
 
-    //gain1 and gain2 varies between -2 and 8
-    //take mastervolume value and apply to distribition
-    this.applyMaster(gain1, gain2);
-    console.log('master: '+this.masterVolume);
+      //gain1 and gain2 varies between -2 and 8
+      //take mastervolume value and apply to distribition
+      this.applyMaster(gain1, gain2);
+      // console.log('master: '+this.masterVolume);
+    }
   };
 
   this.applyMaster = function(gain1, gain2){
     try{
+      // if(this.mastervolume<-1.99){
+      //   this.leftGain.gain.value = this.masterVolume;
+      //   this.rightGain.gain.value = this.masterVolume;
+      // }
       if(gain1 >= 0){
         //8 is max limit
         gain1 = (gain1 > 8) ? 8 : gain1;
         this.leftGain.gain.value = ((gain1/8)*this.masterVolume);
-        console.log('left: '+this.leftGain.gain.value);
+        // console.log('left: '+this.leftGain.gain.value);
       }
       else{
         //-2 is min limit
         gain1 = (gain1 < -2) ? -2 : gain1;
         this.leftGain.gain.value = gain1;
-        console.log('left: '+this.leftGain.gain.value);
+        // console.log('left: '+this.leftGain.gain.value);
       }
       if(gain2 >= 0){
         gain2 = (gain2 > 8) ? 8 : gain2;
         this.rightGain.gain.value = ((gain2/8)*this.masterVolume);
-        console.log('right: '+this.rightGain.gain.value);
+        // console.log('right: '+this.rightGain.gain.value);
       }
       else{
         gain2 = (gain2 < -2) ? -2 : gain2;
         this.rightGain.gain.value = gain2;
-        console.log('right: '+this.rightGain.gain.value);
+        // console.log('right: '+this.rightGain.gain.value);
       }
     }catch(e){
       if(e instanceof TypeError){
@@ -204,16 +219,6 @@ function Sound(main, context, urlList, callback) {
       }
     }
   };  
-
-  this.toggleCrossFade = function(element) {
-    if (element.checked) {
-      this.leftGain.connect(this.context.destination);
-      this.rightGain.connect(this.context.destination);
-    } else {
-      this.leftGain.disconnect(0);
-      this.rightGain.disconnect(0);
-    }
-  };
 
   this.changeFrequency = function(element, height) {
     var frequency;
@@ -281,21 +286,6 @@ function Sound(main, context, urlList, callback) {
       this.filter.connect(this.context.destination);
     } else {
       this.filter.disconnect(0);
-    }
-  };
-
-  this.connectSource = function(source, instance){
-    try{
-      source.connect(instance);
-    }
-    catch(e){
-      if(e instanceof TypeError){
-        // no sound loaded yet
-        // setTimeout(function(){ console.log('try again now'); }, 1000);
-      }
-      else{
-        throw e;
-      }
     }
   };
 

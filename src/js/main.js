@@ -9,6 +9,8 @@ window.onload = initSound;
 function initSimulation(){
   simulation = new Simulation();
   simulation.start(sound);
+  loaded = true;
+  //change view from loading screen
   stopLoadingView();
 }
 // create audiocontext and load sources
@@ -42,8 +44,6 @@ function finishedLoading(bufferList) {
   sound.setSource(source1, source2);
 
   //finished loading, start simulation
-  loaded = true;
-  //change view from loading screen
   initSimulation();
 }
 

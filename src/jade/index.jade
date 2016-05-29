@@ -15,23 +15,24 @@ html
       .container
         h3 Leap DJ
 
-        p Hello! This is a web application for manipulating music with a leap motion. Plug in your device and make sure the software is running! <br> Move your hands around over the Leap. Instructions: ...
+        .checkboxes
+          p Enable volume: 
+            input#enable-volume(type='checkbox', name='volume', value='enabled', checked)
+          p Enable volume: 
+            input#enable-filter(type='checkbox', name='volume', value='enabled', onclick='sound.toggleFilter( this)', checked)
+          p Enable crossfade
+            input#enable-crossfade(type='checkbox', name='volume', value='enabled', checked)
+
         .btns
           button#btn(onclick='sound.toggle()') start/stop
 
-        .checkboxes
-          input#enable-volume(type='checkbox', name='volume', value='enabled', onclick='sound.toggleVolume(this)', checked)
-          input#enable-filter(type='checkbox', name='volume', value='enabled', onclick='sound.toggleFilter(this)', checked)
-          input#enable-crossfade(type='checkbox', name='volume', value='enabled', onclick='sound.toggleCrossFade(this)', checked)
-        .sliders
-          input#volume-slider(type='range', min='0', max='200', value='100', orient='vertical', oninput='sound.changeVolume(this, 0)')
-          input#filter-slider(type='range', min='0', max='200', value='200', orient='vertical', oninput='sound.changeFrequency(this, 0)')
-          input#filter-q-slider(type='range', min='0', max='200', value='200', orient='vertical', oninput='sound.changeQuality(this, 0)')
-        .crossfade
-          input#crossfade-slider(type='range', min='0', max='200', value='0', oninput='sound.crossFade(this, 0)')
+      .sliders
+        input#volume-slider(type='range', min='0', max='200', value='100', orient='vertical', oninput='sound.changeVolume(this, 0)')
+        input#filter-slider(type='range', min='0', max='200', value='200', orient='vertical', oninput='sound.changeFrequency(this, 0)')
+        input#filter-q-slider(type='range', min='0', max='200', value='200', orient='vertical', oninput='sound.changeQuality(this, 0)')
+      .crossfade
+        input#crossfade-slider(type='range', min='0', max='200', value='0', oninput='sound.crossFade(this, 0)')
 
-        .outputCon
-          #output
     if develop
       each jsFile in jsLibFiles
         script(src="js/#{jsFile}")

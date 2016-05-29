@@ -38,6 +38,7 @@ function Simulation() {
           sound.changeFrequency(filterSlider, hand.screenPosition()[1]);
         }
 
+        //filter Q
         //if right closed palm with thumb out
         if(hand.grabStrength > 0.8 && hand.pinchStrength < 0.1 && hand.type == 'right'){
           sound.changeFrequency(filterQSlider, hand.screenPosition()[1]);
@@ -63,19 +64,25 @@ function Simulation() {
     })
     .use('screenPosition', {scale: 0.3})
     .use('riggedHand')
-    .use('handEntry')
-    .use('playback', {
-      recording: '../assets/recordings/leap-recording3.json.lz',
-      loop: false
-    });
+    .use('handEntry');
+    // .use('playback', {
+    //   recording: '../assets/recordings/leap-recording3.json.lz',
+    //   loop: false
+    // });
 
     riggedHandPlugin = Leap.loopController.plugins.riggedHand;
+    // console.log(Leap.loopController.plugins.playback.player.overlay);
+
+    // window.resizeTo(1080, 250); 
+    setTimeout(function(){ 
+      // document.getElementById("connect-leap")[0].setAttribute("width", "1080px");
+      document.getElementsByTagName("CANVAS")[0].setAttribute("width", "1080");
+    }, 2000);
 
     // always receive frames
     Leap.loopController.setBackground(true);
     //leap loop uses browsers request AnimationFrame
     var options = {enableGestures: true};
-
   };
 
   function detectGesture(frame){
@@ -96,14 +103,6 @@ function Simulation() {
             break;
       }
     });
-  }
-
-  function concatData(id, data){
-    return id + ": " + data + "<br>";
-  }
-
-  function concatJointPosition(id, position){
-    return id + ": " + position[0] + ", " + position[1] + ", " + position[2] + "<br>";
   }
 
 }
