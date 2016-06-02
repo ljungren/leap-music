@@ -25,6 +25,8 @@ function Simulation() {
 
         //closed fist makes no input
 
+        // console.log(hand.palmPosition);
+
         //volume
         //if left open palm
         if(hand.pinchStrength < 0.1 && hand.grabStrength < 0.1 && hand.type == 'left'){
@@ -64,20 +66,20 @@ function Simulation() {
     })
     .use('screenPosition', {scale: 0.3})
     .use('riggedHand')
-    .use('handEntry');
-    // .use('playback', {
-    //   recording: '../assets/recordings/leap-recording3.json.lz',
-    //   loop: false
-    // });
+    .use('handEntry')
+    .use('playback', {
+      recording: '../assets/recordings/leap-recording3.json.lz',
+      loop: false
+    });
 
     riggedHandPlugin = Leap.loopController.plugins.riggedHand;
     // console.log(Leap.loopController.plugins.playback.player.overlay);
 
     // window.resizeTo(1080, 250); 
-    setTimeout(function(){ 
-      // document.getElementById("connect-leap")[0].setAttribute("width", "1080px");
-      document.getElementsByTagName("CANVAS")[0].setAttribute("width", "1080");
-    }, 2000);
+    // setTimeout(function(){ 
+    //   // document.getElementById("connect-leap")[0].setAttribute("width", "1080px");
+    //   document.getElementsByTagName("CANVAS")[0].setAttribute("width", "1080");
+    // }, 2000);
 
     // always receive frames
     Leap.loopController.setBackground(true);
@@ -88,12 +90,6 @@ function Simulation() {
   function detectGesture(frame){
     frame.gestures.forEach(function(gesture){
       switch (gesture.type){
-        case "circle":
-            //console.log("Circle Gesture");
-            break;
-        case "keyTap":
-            //console.log("Key Tap Gesture");
-            break;
         case "screenTap":
             console.log("Screen Tap Gesture");
             this.sound.toggle();
