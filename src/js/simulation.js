@@ -19,11 +19,6 @@ function Simulation() {
     Leap.loop(function(frame) {
 
       frame.hands.forEach(function(hand, index) {
-        //squares
-        // var square = ( squares[index] || (squares[index] = new Square()) );    
-        // square.setTransform(hand.screenPosition(), hand.roll());
-
-        //closed fist makes no input
 
         // console.log(hand.palmPosition);
 
@@ -66,20 +61,13 @@ function Simulation() {
     })
     .use('screenPosition', {scale: 0.3})
     .use('riggedHand')
-    .use('handEntry')
-    .use('playback', {
-      recording: '../assets/recordings/leap-recording3.json.lz',
-      loop: false
-    });
+    .use('handEntry');
+    // .use('playback', {
+    //   recording: '../assets/recordings/leap-recording3.json.lz',
+    //   loop: false
+    // });
 
     riggedHandPlugin = Leap.loopController.plugins.riggedHand;
-    // console.log(Leap.loopController.plugins.playback.player.overlay);
-
-    // window.resizeTo(1080, 250); 
-    // setTimeout(function(){ 
-    //   // document.getElementById("connect-leap")[0].setAttribute("width", "1080px");
-    //   document.getElementsByTagName("CANVAS")[0].setAttribute("width", "1080");
-    // }, 2000);
 
     // always receive frames
     Leap.loopController.setBackground(true);
